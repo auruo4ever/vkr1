@@ -4,52 +4,32 @@ import static android.content.ContentValues.TAG;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.messaging.FirebaseMessaging;
 
 public class MainActivity extends AppCompatActivity {
 
+    private int[] images = {R.drawable.computer, R.drawable.computer, R.drawable.computer, R.drawable.computer};
+    private RecyclerView recyclerView;
+    private RecyclerView.LayoutManager layoutManager;
+    private MainRecyclerAdapter adapter;
+    private Integer current = 0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        initRecyclerView();
 
-        // Initialize and assign variable
-        BottomNavigationView bottomNavigationView=findViewById(R.id.bottom_navigation);
-
-        // Set Home selected
-        bottomNavigationView.setSelectedItemId(R.id.home);
-
-        // Perform item selected listener
-        bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-
-                switch(item.getItemId())
-                {
-                    case R.id.dashboard:
-                        startActivity(new Intent(getApplicationContext(), Dashboard.class));
-                        overridePendingTransition(0,0);
-                        return true;
-                    case R.id.home:
-                        return true;
-                    case R.id.about:
-                        startActivity(new Intent(getApplicationContext(),About.class));
-                        overridePendingTransition(0,0);
-                        return true;
-                }
-                return false;
-            }
-        });
 
         FirebaseMessaging.getInstance().getToken()
                 .addOnCompleteListener(new OnCompleteListener<String>() {
@@ -68,6 +48,27 @@ public class MainActivity extends AppCompatActivity {
                         Toast.makeText(MainActivity.this, token, Toast.LENGTH_SHORT).show();
                     }
                 });
+    }
+
+    private void initRecyclerView(){
+        MainRecyclerAdapter.OnComputerClickListener onTourClickListener = new MainRecyclerAdapter.OnComputerClickListener() {
+            @Override
+            public void OnTaskClick(int computer) {
+                Intent intent = new Intent(MainActivity.this, Home.class);
+                //Intent intent2 = new Intent("Chosen Tour");
+                //current = computer;
+                //intent2.putExtra("Chosen", computer);
+                intent.putExtra("Chosen", computer);
+               // LocalBroadcastManager.getInstance(MainActivity.this).sendBroadcast(intent2);
+                startActivity(intent);
+            }
+        };
+        recyclerView = findViewById(R.id.recyclerViewMain);
+        layoutManager = new GridLayoutManager(this, 2); //2 колонки
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setLayoutManager(layoutManager);
+        adapter = new MainRecyclerAdapter(this, images, onTourClickListener);
+        recyclerView.setAdapter(adapter);
 
     }
 }

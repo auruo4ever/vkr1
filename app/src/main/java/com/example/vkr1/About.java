@@ -36,7 +36,7 @@ public class About extends AppCompatActivity {
                     case R.id.about:
                         return true;
                     case R.id.home:
-                        startActivity(new Intent(getApplicationContext(),MainActivity.class));
+                        startActivity(new Intent(getApplicationContext(), Home.class));
                         overridePendingTransition(0,0);
                         return true;
                 }
