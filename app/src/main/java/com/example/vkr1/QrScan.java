@@ -23,6 +23,12 @@ public class QrScan extends AppCompatActivity {
         qr_btn.setOnClickListener(v -> {
             scanCode();
         });
+
+        Button btn_next = findViewById(R.id.btn_next);
+        btn_next.setOnClickListener(v -> {
+            Intent intent = new Intent(QrScan.this, MainActivity.class);
+            startActivity(intent);
+        });
     }
 
     private void scanCode() {
@@ -49,8 +55,8 @@ public class QrScan extends AppCompatActivity {
             }).show();
         }
 
-        //Intent intent = new Intent(QrScan.this, MainActivity.class);
-        //intent.putExtra("Code", text);
-        //startActivity(intent);
+        Intent intent = new Intent(QrScan.this, MainActivity.class);
+        intent.putExtra("Code", text);
+        startActivity(intent);
     });
 }

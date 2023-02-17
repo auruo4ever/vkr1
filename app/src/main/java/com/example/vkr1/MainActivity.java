@@ -13,13 +13,23 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.example.vkr1.Entity.Computer;
+import com.example.vkr1.Entity.Computers;
+import com.example.vkr1.Entity.JSONPlaceholder;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.messaging.FirebaseMessaging;
 
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
+
 public class MainActivity extends AppCompatActivity {
 
-    private int[] images = {R.drawable.computer, R.drawable.computer, R.drawable.computer, R.drawable.computer};
     private RecyclerView recyclerView;
     private RecyclerView.LayoutManager layoutManager;
     private MainRecyclerAdapter adapter;
@@ -28,7 +38,31 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        initRecyclerView();
+
+        Retrofit retrofit = new Retrofit.Builder().baseUrl("http://46.151.30.76:5000/api/")
+                        .addConverterFactory(GsonConverterFactory.create())
+                                .build();
+        JSONPlaceholder jsonPlaceholder = retrofit.create(JSONPlaceholder.class);
+        Call<Computers> call = jsonPlaceholder.getComputers();
+        call.enqueue(new Callback<Computers>() {
+            @Override
+            public void onResponse(Call<Computers> call, Response<Computers> response) {
+
+                Log.e("e", "RESPONSE  " + response);
+
+                if (!response.isSuccessful()) {
+                    Toast.makeText(MainActivity.this, response.message(), Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                Computers computers = response.body();
+                initRecyclerView(computers);
+            }
+
+            @Override
+            public void onFailure(Call<Computers> call, Throwable t) {
+                Log.e("e", "RESPONSE  " + t.getMessage());
+            }
+        });
 
 
         FirebaseMessaging.getInstance().getToken()
@@ -45,20 +79,18 @@ public class MainActivity extends AppCompatActivity {
 
                         // Log and toast
                         Log.e("e", "ABOBA  " + token);
-                        Toast.makeText(MainActivity.this, token, Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(MainActivity.this, token, Toast.LENGTH_SHORT).show();
                     }
                 });
     }
 
-    private void initRecyclerView(){
+    private void initRecyclerView(Computers computers){
         MainRecyclerAdapter.OnComputerClickListener onTourClickListener = new MainRecyclerAdapter.OnComputerClickListener() {
             @Override
-            public void OnTaskClick(int computer) {
+            public void OnTaskClick(int computernum) {
                 Intent intent = new Intent(MainActivity.this, Home.class);
-                //Intent intent2 = new Intent("Chosen Tour");
-                //current = computer;
-                //intent2.putExtra("Chosen", computer);
-                intent.putExtra("Chosen", computer);
+                String hardwareId = computers.getComputers().get(computernum).getHardware_id();
+                intent.putExtra("Chosen", hardwareId);
                // LocalBroadcastManager.getInstance(MainActivity.this).sendBroadcast(intent2);
                 startActivity(intent);
             }
@@ -67,7 +99,7 @@ public class MainActivity extends AppCompatActivity {
         layoutManager = new GridLayoutManager(this, 2); //2 колонки
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(layoutManager);
-        adapter = new MainRecyclerAdapter(this, images, onTourClickListener);
+        adapter = new MainRecyclerAdapter(this, computers, onTourClickListener);
         recyclerView.setAdapter(adapter);
 
     }

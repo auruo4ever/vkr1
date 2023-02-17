@@ -9,12 +9,29 @@
 
     <TextView
         android:id="@+id/homeText"
-        android:layout_width="339dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:text="Home"
-        android:textAlignment="center"
+        android:text="Computer name"
+        android:layout_centerHorizontal="true"
         android:textSize="50sp"
+        android:textStyle="bold" />
+    <TextView
+        android:id="@+id/cpu"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Info"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/homeText"
+        android:textSize="30sp"
+        android:textStyle="bold" />
+    <TextView
+        android:id="@+id/gpus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Info"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/cpu"
+        android:textSize="30sp"
         android:textStyle="bold" />
 
     <com.google.android.material.bottomnavigation.BottomNavigationView

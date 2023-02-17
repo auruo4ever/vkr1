@@ -11,13 +11,18 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.vkr1.Entity.Computer;
+import com.example.vkr1.Entity.Computers;
+
+import java.util.List;
+
 public class MainRecyclerAdapter extends RecyclerView.Adapter<MainRecyclerAdapter.ImageViewHolder> {
     private MainRecyclerAdapter.OnComputerClickListener onComputerClickListener;
-    private int[] images;
+    private Computers computers;
     Context context;
 
-    public MainRecyclerAdapter(Context context, int[] images, MainRecyclerAdapter.OnComputerClickListener onComputerClickListener) {
-        this.images = images;
+    public MainRecyclerAdapter(Context context, Computers computers, MainRecyclerAdapter.OnComputerClickListener onComputerClickListener) {
+        this.computers = computers;
         this.context = context;
         this.onComputerClickListener = onComputerClickListener;
     }
@@ -31,15 +36,16 @@ public class MainRecyclerAdapter extends RecyclerView.Adapter<MainRecyclerAdapte
 
     @Override
     public void onBindViewHolder(@NonNull ImageViewHolder holder, int position) {
-        int imageId = images[position];
-        holder.imageView.setImageResource(imageId);
-        holder.textView.setText("Computer " + position);
+        Computer computer = computers.getComputers().get(position);
+
+        holder.imageView.setImageResource(R.drawable.computer);
+        holder.textView.setText(computer.getName());
 
         int pos = holder.getAdapterPosition();
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //int chosen = images[pos];
+                //int chosen = computers[pos];
                 //Log.i("TAG1","I will send task number "+ Integer.toString(chosen));
                 onComputerClickListener.OnTaskClick(pos);
             }
@@ -48,7 +54,7 @@ public class MainRecyclerAdapter extends RecyclerView.Adapter<MainRecyclerAdapte
 
     @Override
     public int getItemCount() {
-        return images.length;
+        return computers.getComputers().size();
     }
 
 

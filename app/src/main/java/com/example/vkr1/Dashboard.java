@@ -16,6 +16,19 @@ public class Dashboard extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dashboard);
 
+        //Получение intend
+        String hardwareId;
+        if (savedInstanceState == null) {
+            Bundle extras = getIntent().getExtras();
+            if (extras == null) {
+                hardwareId = null;
+            } else {
+                hardwareId= extras.getString("Chosen");
+            }
+        } else {
+            hardwareId = (String) savedInstanceState.getSerializable("Chosen");
+        }
+
         // Initialize and assign variable
         BottomNavigationView bottomNavigationView=findViewById(R.id.bottom_navigation);
 
@@ -26,17 +39,21 @@ public class Dashboard extends AppCompatActivity {
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-
+                Intent intent;
                 switch(item.getItemId())
                 {
                     case R.id.home:
-                        startActivity(new Intent(getApplicationContext(), Home.class));
+                        intent = new Intent(Dashboard.this, Home.class);
+                        intent.putExtra("Chosen", hardwareId);
+                        startActivity(intent);
                         overridePendingTransition(0,0);
                         return true;
                     case R.id.dashboard:
                         return true;
                     case R.id.about:
-                        startActivity(new Intent(getApplicationContext(),About.class));
+                        intent = new Intent(Dashboard.this, About.class);
+                        intent.putExtra("Chosen", hardwareId);
+                        startActivity(intent);
                         overridePendingTransition(0,0);
                         return true;
                 }
