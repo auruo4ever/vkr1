@@ -9,8 +9,8 @@ import retrofit2.http.Query;
 public interface JSONPlaceholder {
 
     @GET("computers")
-    Call<Computers> getComputers();
+    Call<Computers> getComputers(@Query("api_key") String key);
 
     @GET("computer")
-    Call<Computer> getComputer(@Query("hardware_id") String hardwareId);
+    Call<Computer> getComputer(@Query("hardware_id") String hardwareId, @Query("api_key") String api);
 }

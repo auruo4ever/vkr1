@@ -1,7 +1,5 @@
 package com.example.vkr1;
 
-import static android.content.ContentValues.TAG;
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -13,12 +11,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.vkr1.Entity.Computer;
-import com.example.vkr1.Entity.Computers;
 import com.example.vkr1.Entity.JSONPlaceholder;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.firebase.messaging.FirebaseMessaging;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -28,6 +22,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class Home extends AppCompatActivity {
 
+    private String name;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,17 +32,23 @@ public class Home extends AppCompatActivity {
         TextView cpu = findViewById(R.id.cpu);
         TextView gpus = findViewById(R.id.gpus);
 
-        //Получение intend
         String hardwareId;
+        String key;
+
+        //Получение intend
+
         if (savedInstanceState == null) {
             Bundle extras = getIntent().getExtras();
             if (extras == null) {
                 hardwareId = null;
+                key = null;
             } else {
                 hardwareId= extras.getString("Chosen");
+                key = extras.getString("Key");
             }
         } else {
             hardwareId = (String) savedInstanceState.getSerializable("Chosen");
+            key = (String) savedInstanceState.getSerializable("Key");
         }
 
 
@@ -55,7 +56,7 @@ public class Home extends AppCompatActivity {
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         JSONPlaceholder jsonPlaceholder = retrofit.create(JSONPlaceholder.class);
-        Call<Computer> call = jsonPlaceholder.getComputer(hardwareId);
+        Call<Computer> call = jsonPlaceholder.getComputer(hardwareId, key);
         call.enqueue(new Callback<Computer>() {
             @Override
             public void onResponse(Call<Computer> call, Response<Computer> response) {
@@ -68,7 +69,8 @@ public class Home extends AppCompatActivity {
                 }
                 Computer computer = response.body();
                 Log.e("e", "RESPONSE2  " + computer.getCpu());
-                userName.setText(computer.getName());
+                name = computer.getName();
+                userName.setText(name);
                 cpu.setText("CPU: " + computer.getCpu());
                 StringBuilder builder = new StringBuilder();
                 for (String disk: computer.getGpus()) {
@@ -100,9 +102,11 @@ public class Home extends AppCompatActivity {
                 Intent intent;
                 switch(item.getItemId())
                 {
-                    case R.id.dashboard:
-                        intent = new Intent(Home.this, Dashboard.class);
+                    case R.id.chat:
+                        intent = new Intent(Home.this, Chat.class);
                         intent.putExtra("Chosen", hardwareId);
+                        intent.putExtra("Key", key);
+                        intent.putExtra("Name", name);
                         startActivity(intent);
                         overridePendingTransition(0,0);
                         return true;
@@ -111,6 +115,7 @@ public class Home extends AppCompatActivity {
                     case R.id.about:
                         intent = new Intent(Home.this, About.class);
                         intent.putExtra("Chosen", hardwareId);
+                        intent.putExtra("Key", key);
                         startActivity(intent);
                         overridePendingTransition(0,0);
                         return true;

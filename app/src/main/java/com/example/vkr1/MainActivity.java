@@ -34,16 +34,30 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView.LayoutManager layoutManager;
     private MainRecyclerAdapter adapter;
     private Integer current = 0;
+    private String key;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //Получение intend
+
+        if (savedInstanceState == null) {
+            Bundle extras = getIntent().getExtras();
+            if (extras == null) {
+                key = null;
+            } else {
+                key= extras.getString("Chosen");
+            }
+        } else {
+            key = (String) savedInstanceState.getSerializable("Chosen");
+        }
+
         Retrofit retrofit = new Retrofit.Builder().baseUrl("http://46.151.30.76:5000/api/")
                         .addConverterFactory(GsonConverterFactory.create())
                                 .build();
         JSONPlaceholder jsonPlaceholder = retrofit.create(JSONPlaceholder.class);
-        Call<Computers> call = jsonPlaceholder.getComputers();
+        Call<Computers> call = jsonPlaceholder.getComputers(key);
         call.enqueue(new Callback<Computers>() {
             @Override
             public void onResponse(Call<Computers> call, Response<Computers> response) {
@@ -91,6 +105,7 @@ public class MainActivity extends AppCompatActivity {
                 Intent intent = new Intent(MainActivity.this, Home.class);
                 String hardwareId = computers.getComputers().get(computernum).getHardware_id();
                 intent.putExtra("Chosen", hardwareId);
+                intent.putExtra("Key", key);
                // LocalBroadcastManager.getInstance(MainActivity.this).sendBroadcast(intent2);
                 startActivity(intent);
             }
@@ -103,4 +118,4 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setAdapter(adapter);
 
     }
-}
+} 

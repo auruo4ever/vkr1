@@ -18,16 +18,21 @@ public class About extends AppCompatActivity {
 
         //Получение intend
         String hardwareId;
+        String key;
         if (savedInstanceState == null) {
             Bundle extras = getIntent().getExtras();
             if (extras == null) {
                 hardwareId = null;
+                key = null;
             } else {
                 hardwareId= extras.getString("Chosen");
+                key = extras.getString("Key");
             }
         } else {
             hardwareId = (String) savedInstanceState.getSerializable("Chosen");
+            key = (String) savedInstanceState.getSerializable("Key");
         }
+
 
         // Initialize and assign variable
         BottomNavigationView bottomNavigationView=findViewById(R.id.bottom_navigation);
@@ -42,9 +47,10 @@ public class About extends AppCompatActivity {
                 Intent intent;
                 switch(item.getItemId())
                 {
-                    case R.id.dashboard:
-                        intent = new Intent(About.this, Dashboard.class);
+                    case R.id.chat:
+                        intent = new Intent(About.this, Chat.class);
                         intent.putExtra("Chosen", hardwareId);
+                        intent.putExtra("Key", key);
                         startActivity(intent);
                         overridePendingTransition(0,0);
                         return true;
@@ -53,6 +59,7 @@ public class About extends AppCompatActivity {
                     case R.id.home:
                         intent = new Intent(About.this, Home.class);
                         intent.putExtra("Chosen", hardwareId);
+                        intent.putExtra("Key", key);
                         startActivity(intent);
                         overridePendingTransition(0,0);
                         return true;
