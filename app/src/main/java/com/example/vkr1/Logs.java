@@ -6,40 +6,57 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.TextView;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-public class About extends AppCompatActivity {
+public class Logs extends AppCompatActivity {
+    private String key;
+    private String hardwareId;
+    private String name;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_about);
+        setContentView(R.layout.activity_logs);
 
         //Получение intend
-        String hardwareId;
-        String key;
         if (savedInstanceState == null) {
             Bundle extras = getIntent().getExtras();
             if (extras == null) {
                 hardwareId = null;
                 key = null;
+                name = null;
             } else {
                 hardwareId= extras.getString("Chosen");
                 key = extras.getString("Key");
+                name = extras.getString("Name");
             }
         } else {
             hardwareId = (String) savedInstanceState.getSerializable("Chosen");
             key = (String) savedInstanceState.getSerializable("Key");
+            name = (String) savedInstanceState.getSerializable("Name");
         }
 
+        Button btn_next = findViewById(R.id.settings);
+        btn_next.setOnClickListener(v -> {
+        });
 
+        //Кнопка назад
+        ImageButton backbutton = findViewById(R.id.backbutton);
+        backbutton.setOnClickListener(v -> {
+            Intent intent = new Intent(Logs.this, MainActivity.class);
+            intent.putExtra("Key", key);
+            startActivity(intent);
+        });
 
-
-
+        TextView textViewName = findViewById(R.id.userName);
+        textViewName.setText(name);
 
         BottomNavigationView bottomNavigationView=findViewById(R.id.bottom_navigation);
-        bottomNavigationView.setSelectedItemId(R.id.about);
+        bottomNavigationView.setSelectedItemId(R.id.logs);
 
         // Perform item selected listener
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -49,18 +66,20 @@ public class About extends AppCompatActivity {
                 switch(item.getItemId())
                 {
                     case R.id.chat:
-                        intent = new Intent(About.this, Chat.class);
+                        intent = new Intent(Logs.this, Chat.class);
                         intent.putExtra("Chosen", hardwareId);
                         intent.putExtra("Key", key);
+                        intent.putExtra("Name", name);
                         startActivity(intent);
                         overridePendingTransition(0,0);
                         return true;
-                    case R.id.about:
+                    case R.id.logs:
                         return true;
                     case R.id.home:
-                        intent = new Intent(About.this, Home.class);
+                        intent = new Intent(Logs.this, Home.class);
                         intent.putExtra("Chosen", hardwareId);
                         intent.putExtra("Key", key);
+                        intent.putExtra("Name", name);
                         startActivity(intent);
                         overridePendingTransition(0,0);
                         return true;

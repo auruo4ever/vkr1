@@ -36,21 +36,24 @@ public class Home extends AppCompatActivity {
         String key;
 
         //Получение intend
-
         if (savedInstanceState == null) {
             Bundle extras = getIntent().getExtras();
             if (extras == null) {
                 hardwareId = null;
                 key = null;
+                name = null;
             } else {
                 hardwareId= extras.getString("Chosen");
                 key = extras.getString("Key");
+                name = extras.getString("Name");
             }
         } else {
             hardwareId = (String) savedInstanceState.getSerializable("Chosen");
             key = (String) savedInstanceState.getSerializable("Key");
+            name = (String) savedInstanceState.getSerializable("Name");
         }
 
+        TextView textViewName = findViewById(R.id.userName);
 
         Retrofit retrofit = new Retrofit.Builder().baseUrl("http://46.151.30.76:5000/api/")
                 .addConverterFactory(GsonConverterFactory.create())
@@ -69,6 +72,7 @@ public class Home extends AppCompatActivity {
                 }
                 Computer computer = response.body();
                 Log.e("e", "RESPONSE2  " + computer.getCpu());
+
                 name = computer.getName();
                 userName.setText(name);
                 cpu.setText("CPU: " + computer.getCpu());
@@ -78,6 +82,7 @@ public class Home extends AppCompatActivity {
                     builder.append("\n ");
                 }
                 gpus.setText("GPUS: " + builder.toString());
+                textViewName.setText(name);
 
             }
 
@@ -112,10 +117,11 @@ public class Home extends AppCompatActivity {
                         return true;
                     case R.id.home:
                         return true;
-                    case R.id.about:
-                        intent = new Intent(Home.this, About.class);
+                    case R.id.logs:
+                        intent = new Intent(Home.this, Logs.class);
                         intent.putExtra("Chosen", hardwareId);
                         intent.putExtra("Key", key);
+                        intent.putExtra("Name", name);
                         startActivity(intent);
                         overridePendingTransition(0,0);
                         return true;

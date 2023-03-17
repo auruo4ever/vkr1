@@ -57,7 +57,7 @@ public class QrScan extends AppCompatActivity {
             key = sPref.getString(SAVED_TEXT, "");
 
             Intent intent = new Intent(QrScan.this, MainActivity.class);
-            intent.putExtra("Chosen", key);
+            intent.putExtra("Key", key);
             startActivity(intent);
         });
 

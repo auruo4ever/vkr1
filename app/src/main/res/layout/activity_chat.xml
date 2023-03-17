@@ -22,7 +22,7 @@
             <ImageButton
                 android:layout_width="40dp"
                 android:layout_height="40dp"
-                android:id="@+id/backbuttonofspecificchat"
+                android:id="@+id/backbutton"
                 android:background="@android:color/transparent"
                 android:src="@drawable/ic_baseline_arrow_back"
                 android:layout_centerVertical="true"
@@ -36,7 +36,7 @@
                 android:layout_height="35dp"
                 android:id="@+id/cardviewofspeficuser"
                 android:layout_marginLeft="5dp"
-                android:layout_toRightOf="@id/backbuttonofspecificchat"
+                android:layout_toRightOf="@id/backbutton"
                 android:layout_centerVertical="true"
                 app:cardCornerRadius="35dp">
 
@@ -134,7 +134,7 @@
         android:layout_width="match_parent"
         android:layout_height="60dp"
         android:layout_alignParentBottom="true"
-        app:itemBackground="@color/teal_700"
+        app:itemBackground="@color/green"
         app:itemIconTint="@drawable/selector"
         app:itemTextColor="@drawable/selector"
         app:menu="@menu/menu_navigation" />

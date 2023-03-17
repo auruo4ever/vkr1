@@ -13,7 +13,6 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -23,7 +22,6 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import org.json.JSONObject;
 
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -36,21 +34,21 @@ import io.socket.emitter.Emitter;
 
 public class Chat extends AppCompatActivity {
     Socket mSocket = null;
-    String key;
-    String hardwareId;
-    String name;
+    private String key;
+    private String hardwareId;
+    private String name;
 
     private EditText getMessage;
-    ImageButton sendMessage;
+    private ImageButton sendMessage;
 
     MessagesAdapter messagesAdapter;
     ArrayList<Message> messagesArrayList;
 
     RecyclerView messageRecyclerView;
 
-    String currenttime;
-    Calendar calendar;
-    SimpleDateFormat simpleDateFormat;
+    private String currenttime;
+    private Calendar calendar;
+    private SimpleDateFormat simpleDateFormat;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,6 +81,14 @@ public class Chat extends AppCompatActivity {
 
         //Имя компьютера сверху
         textViewName.setText(name);
+
+        //Кнопка назад
+        ImageButton backbutton = findViewById(R.id.backbutton);
+        backbutton.setOnClickListener(v -> {
+            Intent intent = new Intent(Chat.this, MainActivity.class);
+            intent.putExtra("Key", key);
+            startActivity(intent);
+        });
 
         //Adapter
         messagesArrayList=new ArrayList<>();
@@ -125,15 +131,17 @@ public class Chat extends AppCompatActivity {
                         intent = new Intent(Chat.this, Home.class);
                         intent.putExtra("Chosen", hardwareId);
                         intent.putExtra("Key", key);
+                        intent.putExtra("Name", name);
                         startActivity(intent);
                         overridePendingTransition(0,0);
                         return true;
                     case R.id.chat:
                         return true;
-                    case R.id.about:
-                        intent = new Intent(Chat.this, About.class);
+                    case R.id.logs:
+                        intent = new Intent(Chat.this, Logs.class);
                         intent.putExtra("Chosen", hardwareId);
                         intent.putExtra("Key", key);
+                        intent.putExtra("Name", name);
                         startActivity(intent);
                         overridePendingTransition(0,0);
                         return true;

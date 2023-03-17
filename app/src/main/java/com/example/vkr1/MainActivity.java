@@ -47,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
             if (extras == null) {
                 key = null;
             } else {
-                key= extras.getString("Chosen");
+                key= extras.getString("Key");
             }
         } else {
             key = (String) savedInstanceState.getSerializable("Chosen");
