@@ -24,6 +24,9 @@ import com.journeyapps.barcodescanner.ScanOptions;
 import org.json.JSONObject;
 
 
+import java.net.URISyntaxException;
+
+import io.socket.client.IO;
 import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
 
@@ -59,6 +62,7 @@ public class QrScan extends AppCompatActivity {
         });
 
         mInputMessageView = findViewById(R.id.editText);
+
         Button btn_send = findViewById(R.id.btn_send);
         btn_send.setOnClickListener(v -> {
             attemptSend();
@@ -66,6 +70,15 @@ public class QrScan extends AppCompatActivity {
 
         textView = findViewById(R.id.textView);
 
+
+        try {
+            String uri = "http://afire.tech:5000?api_key=" + key;
+            //String uri = "http://10.0.0.2:5000?api_key=" + "test_api_key";
+            mSocket = IO.socket(uri);
+        } catch (URISyntaxException e) {
+            Log.e(TAG, "NO CONNECTION WEBSOCKETS ");
+        }
+        mSocket.connect();
     }
 
     private void scanCode() {
@@ -96,12 +109,15 @@ public class QrScan extends AppCompatActivity {
             /*
             //ПОДКЛЮЧЕНИЕ
             try {
-                String uri = "http://afire.tech:5000?api_key=" + key;
+                //String uri = "http://afire.tech:5000?api_key=" + key;
+                String uri = "http://10.0.0.2:5000?api_key=" + "test_api_key";
                 mSocket = IO.socket(uri);
             } catch (URISyntaxException e) {
                 Log.e(TAG, "NO CONNECTION WEBSOCKETS ");
             }
-            */
+
+             */
+            
 
 
         }
@@ -114,8 +130,10 @@ public class QrScan extends AppCompatActivity {
             return;
         }
 
-        mSocket.connect();
         if (mSocket.connected()) {
+            //mSocket.emit("user_connections");
+            //mSocket.on("user_connections", onUserConnection);
+
             mSocket.on("my_response", onNewMessage);
             mInputMessageView.setText("");
 
@@ -135,12 +153,33 @@ public class QrScan extends AppCompatActivity {
                 public void run() {
                     JSONObject data = (JSONObject) args[0];
                     String text;
-                    String id;
                     try {
                         text = data.getString("data");
                         textView.setText(text);
 
                         Log.e(TAG, "run: " + text);
+
+                    } catch (Exception e) {
+                        return;
+                    }
+                }
+            });
+        }
+    };
+
+    Emitter.Listener onUserConnection = new Emitter.Listener() {
+        @Override
+        public void call(final Object... args) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    JSONObject data = (JSONObject) args[0];
+                    String text;
+                    try {
+                        text = data.toString();
+                        textView.setText(text);
+
+                        Log.e(TAG, "USER CONNECTION: " + text);
 
                     } catch (Exception e) {
                         return;

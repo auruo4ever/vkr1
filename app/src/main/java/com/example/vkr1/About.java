@@ -34,10 +34,11 @@ public class About extends AppCompatActivity {
         }
 
 
-        // Initialize and assign variable
-        BottomNavigationView bottomNavigationView=findViewById(R.id.bottom_navigation);
 
-        // Set Home selected
+
+
+
+        BottomNavigationView bottomNavigationView=findViewById(R.id.bottom_navigation);
         bottomNavigationView.setSelectedItemId(R.id.about);
 
         // Perform item selected listener

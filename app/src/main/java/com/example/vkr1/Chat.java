@@ -4,21 +4,53 @@ import static androidx.constraintlayout.helper.widget.MotionEffect.TAG;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
+import com.example.vkr1.Entity.Message;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import org.json.JSONObject;
+
+import java.net.URI;
 import java.net.URISyntaxException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 
 import io.socket.client.IO;
 import io.socket.client.Socket;
+import io.socket.emitter.Emitter;
 
 public class Chat extends AppCompatActivity {
+    Socket mSocket = null;
+    String key;
+    String hardwareId;
+    String name;
+
+    private EditText getMessage;
+    ImageButton sendMessage;
+
+    MessagesAdapter messagesAdapter;
+    ArrayList<Message> messagesArrayList;
+
+    RecyclerView messageRecyclerView;
+
+    String currenttime;
+    Calendar calendar;
+    SimpleDateFormat simpleDateFormat;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,12 +58,12 @@ public class Chat extends AppCompatActivity {
         setContentView(R.layout.activity_chat);
 
         Socket mSocket = null;
-        TextView textViewName = findViewById(R.id.hardware_id);
+        TextView textViewName = findViewById(R.id.userName);
+        getMessage = findViewById(R.id.getmessage);
+        sendMessage = findViewById(R.id.imageviewsendmessage);
+
 
         //Получение intend
-        String hardwareId;
-        String key;
-        String name;
         if (savedInstanceState == null) {
             Bundle extras = getIntent().getExtras();
             if (extras == null) {
@@ -49,16 +81,40 @@ public class Chat extends AppCompatActivity {
             name = (String) savedInstanceState.getSerializable("Name");
         }
 
+        //Имя компьютера сверху
         textViewName.setText(name);
 
+        //Adapter
+        messagesArrayList=new ArrayList<>();
+        messageRecyclerView = findViewById(R.id.recyclerviewofspecific);
+        LinearLayoutManager linearLayoutManager=new LinearLayoutManager(this);
+        linearLayoutManager.setStackFromEnd(true);
+        messageRecyclerView.setLayoutManager(linearLayoutManager);
+        messagesAdapter=new MessagesAdapter(Chat.this,messagesArrayList);
+        messageRecyclerView.setAdapter(messagesAdapter);
 
-        // Initialize and assign variable
-        BottomNavigationView bottomNavigationView=findViewById(R.id.bottom_navigation);
 
-        // Set Home selected
+        //Открыть вебсокет
+        createWebSocketClient();
+
+        //Дата
+        calendar=Calendar.getInstance();
+        simpleDateFormat=new SimpleDateFormat("hh:mm a");
+
+
+        sendMessage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                attemptSend();
+            }
+        });
+
+
+
+        //Нижняя навигация
+        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
         bottomNavigationView.setSelectedItemId(R.id.chat);
 
-        // Perform item selected listener
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -88,13 +144,88 @@ public class Chat extends AppCompatActivity {
 
 
 
-        //ПОДКЛЮЧЕНИЕ
+    }
+
+    private void createWebSocketClient() {
         try {
             String uri = "http://afire.tech:5000?api_key=" + key;
             mSocket = IO.socket(uri);
         } catch (URISyntaxException e) {
             Log.e(TAG, "NO CONNECTION WEBSOCKETS ");
         }
+        mSocket.connect();
 
+
+    }
+
+    private void attemptSend() {
+
+        String message = getMessage.getText().toString().trim();
+        if (TextUtils.isEmpty(message)) {
+            return;
+        }
+        Date date = new Date();
+        currenttime = simpleDateFormat.format(calendar.getTime());
+        Message message1 = new Message(message, key, date.getTime(), currenttime, true);
+        messagesArrayList.add(message1);
+        messagesAdapter.notifyDataSetChanged();
+
+        mSocket.connect();
+        if (mSocket.connected()) {
+
+            getMessage.setText("");
+            mSocket.on("my_response", onNewMessage);
+
+            //типа тут?
+            mSocket.emit("my_broadcast_event", message);
+        }
+        else {
+            Log.e(TAG, "NO CONNECTION!!!! ");
+        }
+
+    }
+
+    Emitter.Listener onNewMessage = new Emitter.Listener() {
+        @Override
+        public void call(final Object... args) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    JSONObject data = (JSONObject) args[0];
+                    String text;
+                    String id;
+                    try {
+                        text = data.getString("data");
+
+                        //ЗАМЕНИТЬ
+                        Date date = new Date();
+                        currenttime = simpleDateFormat.format(calendar.getTime());
+                        Message message1 = new Message(text, key, date.getTime(), currenttime, false);
+                        messagesArrayList.add(message1);
+                        messagesAdapter.notifyDataSetChanged();
+
+                        Log.e(TAG, "message: " + text);
+
+                    } catch (Exception e) {
+                        return;
+                    }
+                }
+            });
+        }
+    };
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        messagesAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if(messagesAdapter!=null)
+        {
+            messagesAdapter.notifyDataSetChanged();
+        }
     }
 }
