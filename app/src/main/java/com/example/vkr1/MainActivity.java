@@ -62,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<Computers> call, Response<Computers> response) {
 
-                Log.e("e", "RESPONSE  " + response);
+                //Log.e("e", "RESPONSE  " + response);
 
                 if (!response.isSuccessful()) {
                     Toast.makeText(MainActivity.this, response.message(), Toast.LENGTH_SHORT).show();

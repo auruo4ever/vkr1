@@ -40,8 +40,12 @@ public class Logs extends AppCompatActivity {
             name = (String) savedInstanceState.getSerializable("Name");
         }
 
+
+
+        //Кнопка настроек
         Button btn_next = findViewById(R.id.settings);
         btn_next.setOnClickListener(v -> {
+            getSupportFragmentManager().beginTransaction().replace(R.id.container, new SettingsFragment()).commit();
         });
 
         //Кнопка назад

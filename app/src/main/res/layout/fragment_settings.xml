@@ -3,12 +3,80 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".SettingsFragment">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".SettingsFragment"
+    android:layout_marginTop="50dp">
 
 
-    <TextView
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:layout_height="match_parent">
+
+        <Button
+            android:id="@+id/ok"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="300dp"
+            android:text="OK"
+            android:backgroundTint="@color/blue"
+            android:textColorHighlight="#287A3737"
+            android:textSize="30sp" />
+
+        <TextView
+            android:id="@+id/typeList"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="180dp"
+            android:text="Type:"
+            android:textColor="@color/black"
+            android:textSize="30sp" />
+
+        <Spinner
+            android:id="@+id/spinner"
+            android:layout_width="339dp"
+            android:layout_height="50dp"
+            android:layout_marginTop="210dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/to"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="100dp"
+            android:text="To:"
+            android:textColor="@color/black"
+            android:textSize="30sp" />
+
+        <Button
+            android:id="@+id/dateTo"
+            style="?android:spinnerStyle"
+            android:layout_width="339dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="130dp"
+            android:text="JAN 01 2020"
+            android:textColor="@color/black"
+            android:textSize="30sp" />
+
+        <Button
+            android:id="@+id/dateFrom"
+            style="?android:spinnerStyle"
+            android:layout_width="339dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="50dp"
+            android:text="JAN 01 2020"
+            android:textColor="@color/black"
+            android:textSize="30sp" />
+
+        <TextView
+            android:id="@+id/from"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="From:"
+            android:textColor="@color/black"
+            android:textSize="30sp" />
+    </RelativeLayout>
 
 </FrameLayout>
