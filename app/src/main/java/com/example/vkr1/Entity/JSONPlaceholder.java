@@ -13,4 +13,11 @@ public interface JSONPlaceholder {
 
     @GET("computer")
     Call<Computer> getComputer(@Query("hardware_id") String hardwareId, @Query("api_key") String api);
+
+    @GET("log")
+    Call<LogsMany> getAllLogs(@Query("hardware_id") String hardwareId, @Query("api_key") String api);
+
+    @GET("log")
+    Call<LogsMany> getSpecificLogs(@Query("hardware_id") String hardwareId, @Query("api_key") String api, @Query("type") int type,
+                                   @Query("from") Long from, @Query("to") Long to);
 }

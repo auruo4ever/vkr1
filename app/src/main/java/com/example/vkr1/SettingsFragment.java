@@ -6,6 +6,8 @@ import android.app.Dialog;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -26,59 +28,23 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.TimeZone;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link SettingsFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class SettingsFragment extends Fragment {
 
     private DatePickerDialog dateFrom;
     private Button dateFromButton;
     private DatePickerDialog dateTo;
     private Button dateToButton;
+    private Button okButton;
     View view;
     int flag = 0;
     private Calendar fromCal = new GregorianCalendar(TimeZone.getTimeZone("GMT"));
     private Calendar toCal = new GregorianCalendar(TimeZone.getTimeZone("GMT"));
-
+    long fromDate = 0, toDate = 0;
+    private int logNum = -1;
     String[] countries = { "Бразилия", "Аргентина", "Колумбия", "Чили", "Уругвай"};
+    private String key;
+    private String hardwareId;
 
-
-
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
-    public SettingsFragment() {
-        // Required empty public constructor
-    }
-
-
-    // TODO: Rename and change types and number of parameters
-    public static SettingsFragment newInstance(String param1, String param2) {
-        SettingsFragment fragment = new SettingsFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
-
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -86,6 +52,11 @@ public class SettingsFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_settings, container, false);
 
+        Bundle bundle = getArguments();
+        if (bundle != null) {
+            key = bundle.getString("Key");
+            hardwareId = bundle.getString("Chosen");
+        }
 
         //ВЫБОР ДВУХ ДАТ
         initDatePicker();
@@ -102,18 +73,35 @@ public class SettingsFragment extends Fragment {
             flag = 2;
             dateTo.show();
         });
+        fromDate = 0L;
+        toDate = Calendar.getInstance().getTimeInMillis() / 1000;
+
+
+        //НАЖАТИЕ ОК
+        okButton = (Button) view.findViewById(R.id.ok);
+        okButton.setOnClickListener(v -> {
+            Bundle bundle1 = new Bundle();
+            bundle1.putLong("fromDate", fromDate);
+            bundle1.putLong("toDate", toDate);
+            bundle1.putInt("logNum", logNum);
+            bundle1.putString("Key", key);
+            bundle1.putString("Chosen", hardwareId);
+            FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+
+            LogsFragment logsFragment = new LogsFragment();
+            logsFragment.setArguments(bundle1);
+
+            fragmentTransaction.replace(R.id.container, logsFragment);
+            fragmentTransaction.commit();
+        });
 
 
 
         //ТИП ЛОГА В СПИННЕРЕ
-       // List<LogType> logsList =
-        //        new ArrayList<LogType>(EnumSet.allOf(LogType.class));
-
         Spinner spinner =  (Spinner) view.findViewById(R.id.spinner);
-        // Создаем адаптер ArrayAdapter с помощью массива строк и стандартной разметки элемета spinner
         ArrayAdapter<LogType> adapter = new ArrayAdapter<LogType>(getActivity(), R.layout.spinner_item, LogType.values());
 
-        //ArrayAdapter<String> adapter = new ArrayAdapter(getActivity(), android.R.layout.simple_spinner_item, countries);
         // Определяем разметку для использования при выборе элемента
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         // Применяем адаптер к элементу spinner
@@ -124,7 +112,8 @@ public class SettingsFragment extends Fragment {
 
                 // Получаем выбранный объект
                 String item = parent.getItemAtPosition(position).toString();
-                Log.e("SPIN ME BABY", item);
+                logNum = position;
+                //Log.e("SPIN ME BABY", item);
             }
 
             @Override
@@ -161,10 +150,12 @@ public class SettingsFragment extends Fragment {
                 if (flag == 1) {
                     dateFromButton.setText(date);
                     fromCal.set(year, month, day);
+                    fromDate = fromCal.getTimeInMillis() / 1000;
                 }
                 else {
                     dateToButton.setText(date);
                     toCal.set(year, month, day);
+                    toDate = toCal.getTimeInMillis() / 1000;
                 }
             }
         };

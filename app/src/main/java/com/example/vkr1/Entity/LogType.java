@@ -4,7 +4,7 @@ public enum LogType {
     PROCESS,
     LOAD,
     USB_DEVICE,
-    MESSAGE,
+    NEW_CONFIGURATION,
     SCREENSHOT,
     BROWSER
 }

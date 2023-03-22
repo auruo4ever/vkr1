@@ -17,6 +17,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import com.example.vkr1.Adapters.MessagesAdapter;
 import com.example.vkr1.Entity.Message;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 

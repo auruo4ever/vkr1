@@ -2,6 +2,8 @@ package com.example.vkr1;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -42,12 +44,6 @@ public class Logs extends AppCompatActivity {
 
 
 
-        //Кнопка настроек
-        Button btn_next = findViewById(R.id.settings);
-        btn_next.setOnClickListener(v -> {
-            getSupportFragmentManager().beginTransaction().replace(R.id.container, new SettingsFragment()).commit();
-        });
-
         //Кнопка назад
         ImageButton backbutton = findViewById(R.id.backbutton);
         backbutton.setOnClickListener(v -> {
@@ -61,6 +57,18 @@ public class Logs extends AppCompatActivity {
 
         BottomNavigationView bottomNavigationView=findViewById(R.id.bottom_navigation);
         bottomNavigationView.setSelectedItemId(R.id.logs);
+
+
+        Bundle bundle = new Bundle();
+        bundle.putString("Key", key);
+        bundle.putString("Chosen", hardwareId);
+        FragmentManager fragmentManager = this.getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        LogsFragment logsFragment = new LogsFragment();
+        logsFragment.setArguments(bundle);
+        fragmentTransaction.replace(R.id.container, logsFragment);
+        fragmentTransaction.commit();
+        //getSupportFragmentManager().beginTransaction().replace(R.id.container, new LogsFragment()).commit();
 
         // Perform item selected listener
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {

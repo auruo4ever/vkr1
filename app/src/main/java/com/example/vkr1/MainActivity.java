@@ -4,7 +4,6 @@ import static android.content.ContentValues.TAG;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -13,14 +12,12 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.example.vkr1.Entity.Computer;
+import com.example.vkr1.Adapters.MainRecyclerAdapter;
 import com.example.vkr1.Entity.Computers;
 import com.example.vkr1.Entity.JSONPlaceholder;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.messaging.FirebaseMessaging;
-
-import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;

@@ -1,7 +1,6 @@
-package com.example.vkr1;
+package com.example.vkr1.Adapters;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,8 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.vkr1.Entity.Computer;
 import com.example.vkr1.Entity.Computers;
-
-import java.util.List;
+import com.example.vkr1.R;
 
 public class MainRecyclerAdapter extends RecyclerView.Adapter<MainRecyclerAdapter.ImageViewHolder> {
     private MainRecyclerAdapter.OnComputerClickListener onComputerClickListener;

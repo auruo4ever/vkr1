@@ -1,4 +1,4 @@
-package com.example.vkr1;
+package com.example.vkr1.Adapters;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.vkr1.Entity.Message;
+import com.example.vkr1.R;
 
 import java.util.ArrayList;
 
