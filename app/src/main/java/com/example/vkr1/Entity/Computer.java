@@ -2,6 +2,7 @@ package com.example.vkr1.Entity;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Computer {
@@ -16,13 +17,16 @@ public class Computer {
     private String cpu;
 
     @SerializedName("gpus")
-    private List<String> gpus;
+    private ArrayList<String> gpus;
 
     @SerializedName("ram")
-    private Integer ram;
+    private long ram;
 
     @SerializedName("disks")
-    private List<String> disks;
+    private ArrayList<String> disks;
+
+    @SerializedName("OS")
+    private String OS;
 
     public String getName() {
         return name;
@@ -48,28 +52,43 @@ public class Computer {
         this.cpu = cpu;
     }
 
-    public List<String> getGpus() {
+    public ArrayList<String> getGpus() {
         return gpus;
     }
 
-    public void setGpus(List<String> gpus) {
+    public void setGpus(ArrayList<String> gpus) {
         this.gpus = gpus;
     }
 
-    public Integer getRam() {
+    public long getRam() {
         return ram;
     }
 
-    public void setRam(Integer ram) {
+    public void setRam(long ram) {
         this.ram = ram;
     }
 
-    public List<String> getDisks() {
+    public ArrayList<String> getDisks() {
         return disks;
     }
 
-    public void setDisks(List<String> disks) {
+    public void setDisks(ArrayList<String> disks) {
         this.disks = disks;
     }
 
+    public String getHardwareId() {
+        return hardwareId;
+    }
+
+    public void setHardwareId(String hardwareId) {
+        this.hardwareId = hardwareId;
+    }
+
+    public String getOS() {
+        return OS;
+    }
+
+    public void setOS(String OS) {
+        this.OS = OS;
+    }
 }

@@ -104,7 +104,7 @@ public class LogsFragment extends Fragment {
         call.enqueue(new Callback<LogsMany>() {
             @Override
             public void onResponse(Call<LogsMany> call, Response<LogsMany> response) {
-                android.util.Log.e("RESPOOOOOOONSE", response.toString());
+                //android.util.Log.e("RESPOOOOOOONSE", response.toString());
                 if (!response.isSuccessful()) {
                     Toast.makeText(getActivity(), response.message(), Toast.LENGTH_SHORT).show();
                     return;
@@ -133,7 +133,7 @@ public class LogsFragment extends Fragment {
         linearLayoutManager.setStackFromEnd(true);
         logsRecyclerView.setLayoutManager(linearLayoutManager);
         logsAdapter = new LogsAdapter(logsArrayList, view.getContext());
-        android.util.Log.e("LOGS ADAPTER", logsAdapter.getLogsArrayList().toString());
+        //android.util.Log.e("LOGS ADAPTER", logsAdapter.getLogsArrayList().toString());
         logsRecyclerView.setAdapter(logsAdapter);
         //android.util.Log.e("logsRecyclerView", logsRecyclerView.toString());
     }

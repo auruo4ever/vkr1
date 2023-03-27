@@ -2,17 +2,26 @@ package com.example.vkr1;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.vkr1.Adapters.DisksAdapter;
+import com.example.vkr1.Adapters.GpusAdapter;
+import com.example.vkr1.Adapters.MainRecyclerAdapter;
 import com.example.vkr1.Entity.Computer;
+import com.example.vkr1.Entity.Computers;
 import com.example.vkr1.Entity.JSONPlaceholder;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+
+import java.util.ArrayList;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -22,15 +31,21 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class Home extends AppCompatActivity {
 
+    private RecyclerView disksRecyclerView;
+    private RecyclerView.LayoutManager layoutManager;
+    private DisksAdapter disksAdapter;
+    private RecyclerView gpusRecyclerView;
+    private GpusAdapter gpusAdapter;
+
+
     private String name;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
-        TextView userName = findViewById(R.id.homeText);
         TextView cpu = findViewById(R.id.cpu);
-        TextView gpus = findViewById(R.id.gpus);
+        TextView ram = findViewById(R.id.ram);
 
         String hardwareId;
         String key;
@@ -53,6 +68,14 @@ public class Home extends AppCompatActivity {
             name = (String) savedInstanceState.getSerializable("Name");
         }
 
+        //Кнопка назад
+        ImageButton backbutton = findViewById(R.id.backbutton);
+        backbutton.setOnClickListener(v -> {
+            Intent intent = new Intent(Home.this, MainActivity.class);
+            intent.putExtra("Key", key);
+            startActivity(intent);
+        });
+
         TextView textViewName = findViewById(R.id.userName);
 
         Retrofit retrofit = new Retrofit.Builder().baseUrl("http://46.151.30.76:5000/api/")
@@ -74,15 +97,13 @@ public class Home extends AppCompatActivity {
                 Log.e("e", "RESPONSE2  " + computer.getCpu());
 
                 name = computer.getName();
-                userName.setText(name);
-                cpu.setText("CPU: " + computer.getCpu());
-                StringBuilder builder = new StringBuilder();
-                for (String disk: computer.getGpus()) {
-                    builder.append(disk);
-                    builder.append("\n ");
-                }
-                gpus.setText("GPUS: " + builder.toString());
+                cpu.setText(computer.getCpu());
+
                 textViewName.setText(name);
+                ram.setText(String.valueOf(computer.getRam()));
+                initDisksRecyclerView(computer.getDisks());
+                initGpusRecyclerView(computer.getGpus());
+
 
             }
 
@@ -131,5 +152,22 @@ public class Home extends AppCompatActivity {
         });
 
 
+    }
+
+    private void initDisksRecyclerView(ArrayList<String> diskArrayList){
+        disksRecyclerView = findViewById(R.id.disks);
+        layoutManager = new GridLayoutManager(this, 2); //2 колонки
+        disksRecyclerView.setHasFixedSize(true);
+        disksRecyclerView.setLayoutManager(layoutManager);
+        disksAdapter = new DisksAdapter(this, diskArrayList);
+        disksRecyclerView.setAdapter(disksAdapter);
+    }
+    private void initGpusRecyclerView(ArrayList<String> gpusArrayList) {
+        gpusRecyclerView = findViewById(R.id.gpus);
+        layoutManager = new GridLayoutManager(this, 2); //2 колонки
+        gpusRecyclerView.setHasFixedSize(true);
+        gpusRecyclerView.setLayoutManager(layoutManager);
+        gpusAdapter = new GpusAdapter(this, gpusArrayList);
+        gpusRecyclerView.setAdapter(gpusAdapter);
     }
 }
