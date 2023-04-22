@@ -4,6 +4,7 @@ import static android.content.ContentValues.TAG;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.helper.widget.MotionEffect;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -14,11 +15,18 @@ import android.widget.Toast;
 
 import com.example.vkr1.Adapters.MainRecyclerAdapter;
 import com.example.vkr1.Entity.Computers;
-import com.example.vkr1.Entity.JSONPlaceholder;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.messaging.FirebaseMessaging;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.net.URISyntaxException;
+
+import io.socket.client.IO;
+import io.socket.client.Socket;
+import io.socket.emitter.Emitter;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -32,6 +40,11 @@ public class MainActivity extends AppCompatActivity {
     private MainRecyclerAdapter adapter;
     private Integer current = 0;
     private String key;
+    Socket mSocket = null;
+    String jsonMessage = "";
+    int myID;
+    String token;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,7 +63,10 @@ public class MainActivity extends AppCompatActivity {
             key = (String) savedInstanceState.getSerializable("Chosen");
         }
 
-        Retrofit retrofit = new Retrofit.Builder().baseUrl("http://46.151.30.76:5000/api/")
+
+
+
+        Retrofit retrofit = new Retrofit.Builder().baseUrl("http://afire.tech:5000/api/")
                         .addConverterFactory(GsonConverterFactory.create())
                                 .build();
         JSONPlaceholder jsonPlaceholder = retrofit.create(JSONPlaceholder.class);
@@ -58,9 +74,6 @@ public class MainActivity extends AppCompatActivity {
         call.enqueue(new Callback<Computers>() {
             @Override
             public void onResponse(Call<Computers> call, Response<Computers> response) {
-
-                //Log.e("e", "RESPONSE  " + response);
-
                 if (!response.isSuccessful()) {
                     Toast.makeText(MainActivity.this, response.message(), Toast.LENGTH_SHORT).show();
                     return;
@@ -68,7 +81,6 @@ public class MainActivity extends AppCompatActivity {
                 Computers computers = response.body();
                 initRecyclerView(computers);
             }
-
             @Override
             public void onFailure(Call<Computers> call, Throwable t) {
                 Log.e("e", "RESPONSE  " + t.getMessage());
@@ -84,15 +96,13 @@ public class MainActivity extends AppCompatActivity {
                             Log.w(TAG, "Fetching FCM registration token failed", task.getException());
                             return;
                         }
-
-                        // Get new FCM registration token
-                        String token = task.getResult();
-
-                        // Log and toast
-                        Log.e("e", "ABOBA  " + token);
-                        //Toast.makeText(MainActivity.this, token, Toast.LENGTH_SHORT).show();
+                        token = task.getResult();
                     }
                 });
+
+        //Открыть вебсокет
+        createWebSocketClient();
+
     }
 
     private void initRecyclerView(Computers computers){
@@ -115,4 +125,58 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setAdapter(adapter);
 
     }
+
+    private void createWebSocketClient() {
+        try {
+            String uri = "http://afire.tech:5000?api_key=" + key;
+            mSocket = IO.socket(uri);
+        } catch (URISyntaxException e) {
+            Log.e(MotionEffect.TAG, "NO CONNECTION WEBSOCKETS ");
+        }
+        mSocket.connect();
+
+        while(!mSocket.connected()) {
+
+        }
+        if (mSocket.connected()) {
+            mSocket.emit("client_info");
+            mSocket.on("client_info", clientInfo);
+        }
+        else {
+            Log.e("NO CONN", "no connection");
+        }
+    }
+    Emitter.Listener clientInfo = new Emitter.Listener() {
+        @Override
+        public void call(final Object... args) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    JSONObject data = new JSONObject();
+                    try {
+                        String dataString = (String) args[0];
+                        data = new JSONObject(dataString);
+                    } catch (Exception ex) {
+                        Log.e("ERROR", ex.getMessage());
+                    }
+                    try {
+                        myID = data.getInt("id");
+                        Log.e("My ID", String.valueOf(myID));
+                        jsonMessage = new JSONObject()
+                                .put("operator_id", myID)
+                                .put("token", token)
+                                .toString();
+                        mSocket.emit("mobile_token", jsonMessage);
+                        Log.e("JSON", jsonMessage);
+                    }
+                    catch (Exception e) {
+                        return;
+                    }
+                }
+            });
+
+        }
+    };
+
+
 } 

@@ -1,4 +1,8 @@
-package com.example.vkr1.Entity;
+package com.example.vkr1;
+
+import com.example.vkr1.Entity.Computer;
+import com.example.vkr1.Entity.Computers;
+import com.example.vkr1.Entity.LogsMany;
 
 import java.util.List;
 
@@ -21,3 +25,4 @@ public interface JSONPlaceholder {
     Call<LogsMany> getSpecificLogs(@Query("hardware_id") String hardwareId, @Query("api_key") String api, @Query("type") int type,
                                    @Query("from") Long from, @Query("to") Long to);
 }
+

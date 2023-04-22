@@ -7,7 +7,6 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
-import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -18,8 +17,6 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import com.example.vkr1.Adapters.LogsAdapter;
-import com.example.vkr1.Adapters.MessagesAdapter;
-import com.example.vkr1.Entity.JSONPlaceholder;
 import com.example.vkr1.Entity.Log;
 import com.example.vkr1.Entity.LogsMany;
 
@@ -104,7 +101,6 @@ public class LogsFragment extends Fragment {
         call.enqueue(new Callback<LogsMany>() {
             @Override
             public void onResponse(Call<LogsMany> call, Response<LogsMany> response) {
-                //android.util.Log.e("RESPOOOOOOONSE", response.toString());
                 if (!response.isSuccessful()) {
                     Toast.makeText(getActivity(), response.message(), Toast.LENGTH_SHORT).show();
                     return;
@@ -113,10 +109,9 @@ public class LogsFragment extends Fragment {
 
                 initRecyclerView(logs, view);
             }
-
             @Override
             public void onFailure(Call<LogsMany> call, Throwable t) {
-                //аписать что ошибка интернета
+                Toast.makeText(getActivity(), t.getMessage(), Toast.LENGTH_SHORT).show();
                 android.util.Log.e("e", "RESPONSE  " + t.getMessage());
             }
         });
@@ -133,9 +128,7 @@ public class LogsFragment extends Fragment {
         linearLayoutManager.setStackFromEnd(true);
         logsRecyclerView.setLayoutManager(linearLayoutManager);
         logsAdapter = new LogsAdapter(logsArrayList, view.getContext());
-        //android.util.Log.e("LOGS ADAPTER", logsAdapter.getLogsArrayList().toString());
         logsRecyclerView.setAdapter(logsAdapter);
-        //android.util.Log.e("logsRecyclerView", logsRecyclerView.toString());
     }
 
 }

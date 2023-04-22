@@ -41,7 +41,6 @@ public class SettingsFragment extends Fragment {
     private Calendar toCal = new GregorianCalendar(TimeZone.getTimeZone("GMT"));
     long fromDate = 0, toDate = 0;
     private int logNum = -1;
-    String[] countries = { "Бразилия", "Аргентина", "Колумбия", "Чили", "Уругвай"};
     private String key;
     private String hardwareId;
 
@@ -97,31 +96,24 @@ public class SettingsFragment extends Fragment {
         });
 
 
-
         //ТИП ЛОГА В СПИННЕРЕ
         Spinner spinner =  (Spinner) view.findViewById(R.id.spinner);
         ArrayAdapter<LogType> adapter = new ArrayAdapter<LogType>(getActivity(), R.layout.spinner_item, LogType.values());
-
         // Определяем разметку для использования при выборе элемента
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        // Применяем адаптер к элементу spinner
         spinner.setAdapter(adapter);
         AdapterView.OnItemSelectedListener itemSelectedListener = new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-
                 // Получаем выбранный объект
                 String item = parent.getItemAtPosition(position).toString();
                 logNum = position;
-                //Log.e("SPIN ME BABY", item);
             }
-
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
             }
         };
         spinner.setOnItemSelectedListener(itemSelectedListener);
-
         return view;
     }
 

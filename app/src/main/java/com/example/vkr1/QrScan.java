@@ -56,6 +56,7 @@ public class QrScan extends AppCompatActivity {
             sPref = getSharedPreferences("Saved_key", MODE_PRIVATE);
             key = sPref.getString(SAVED_TEXT, "");
 
+
             Intent intent = new Intent(QrScan.this, MainActivity.class);
             intent.putExtra("Key", key);
             startActivity(intent);
@@ -73,7 +74,6 @@ public class QrScan extends AppCompatActivity {
 
         try {
             String uri = "http://afire.tech:5000?api_key=" + key;
-            //String uri = "http://10.0.0.2:5000?api_key=" + "test_api_key";
             mSocket = IO.socket(uri);
         } catch (URISyntaxException e) {
             Log.e(TAG, "NO CONNECTION WEBSOCKETS ");
@@ -82,15 +82,12 @@ public class QrScan extends AppCompatActivity {
     }
 
     private void scanCode() {
-
-
         ScanOptions options = new ScanOptions();
         options.setPrompt("Volume up to set flash");
         options.setBeepEnabled(true);
         options.setOrientationLocked(true);
         options.setCaptureActivity(CaptureAct.class);
         barLauncher.launch(options);
-
     }
 
     ActivityResultLauncher<ScanOptions> barLauncher = registerForActivityResult(new ScanContract(), result -> {
@@ -98,28 +95,11 @@ public class QrScan extends AppCompatActivity {
         String text = result.getContents();
         if (text != null) {
             key = text;
-
-
             sPref = getSharedPreferences("Saved_key", MODE_PRIVATE);
             SharedPreferences.Editor ed = sPref.edit();
             ed.putString(SAVED_TEXT, key);
             ed.commit();
             Toast.makeText(QrScan.this, "Text saved", Toast.LENGTH_SHORT).show();
-
-            /*
-            //ПОДКЛЮЧЕНИЕ
-            try {
-                //String uri = "http://afire.tech:5000?api_key=" + key;
-                String uri = "http://10.0.0.2:5000?api_key=" + "test_api_key";
-                mSocket = IO.socket(uri);
-            } catch (URISyntaxException e) {
-                Log.e(TAG, "NO CONNECTION WEBSOCKETS ");
-            }
-
-             */
-            
-
-
         }
     });
 

@@ -1,22 +1,35 @@
 package com.example.vkr1.Entity;
 
+import com.google.gson.annotations.SerializedName;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 public class Message {
 
+    @SerializedName("msg")
     private String message;
-    private String senderId;
+
+    @SerializedName("from")
+    private int senderId;
+
+    @SerializedName("timestamp")
     private long timestamp;
-    private String currenttime;
+
+    @SerializedName("room")
+    private String room;
+
     private boolean isMine = false;
 
     public Message() {
 
     }
 
-    public Message(String message, String senderId, long timestamp, String currenttime, boolean isMine) {
+    public Message(String message, int senderId, long timestamp, boolean isMine) {
         this.message = message;
         this.senderId = senderId;
         this.timestamp = timestamp;
-        this.currenttime = currenttime;
         this.isMine = isMine;
     }
 
@@ -28,11 +41,11 @@ public class Message {
         this.message = message;
     }
 
-    public String getSenderId() {
+    public int getSenderId() {
         return senderId;
     }
 
-    public void setSenderId(String senderId) {
+    public void setSenderId(int senderId) {
         this.senderId = senderId;
     }
 
@@ -44,19 +57,26 @@ public class Message {
         this.timestamp = timestamp;
     }
 
-    public String getCurrenttime() {
-        return currenttime;
-    }
-
-    public void setCurrenttime(String currenttime) {
-        this.currenttime = currenttime;
-    }
-
     public boolean isMine() {
         return isMine;
     }
 
     public void setMine(boolean mine) {
         isMine = mine;
+    }
+
+    public String getRoom() {
+        return room;
+    }
+
+    public void setRoom(String room) {
+        this.room = room;
+    }
+
+    public String getNormalTime() {
+        Date date = new java.util.Date((long) timestamp * 1000);
+        DateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm");
+        String strDate = dateFormat.format(date);
+        return strDate;
     }
 }

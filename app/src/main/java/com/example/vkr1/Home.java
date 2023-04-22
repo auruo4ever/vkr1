@@ -15,10 +15,7 @@ import android.widget.Toast;
 
 import com.example.vkr1.Adapters.DisksAdapter;
 import com.example.vkr1.Adapters.GpusAdapter;
-import com.example.vkr1.Adapters.MainRecyclerAdapter;
 import com.example.vkr1.Entity.Computer;
-import com.example.vkr1.Entity.Computers;
-import com.example.vkr1.Entity.JSONPlaceholder;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.ArrayList;
@@ -78,7 +75,7 @@ public class Home extends AppCompatActivity {
 
         TextView textViewName = findViewById(R.id.userName);
 
-        Retrofit retrofit = new Retrofit.Builder().baseUrl("http://46.151.30.76:5000/api/")
+        Retrofit retrofit = new Retrofit.Builder().baseUrl("http://afire.tech:5000/api/")
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         JSONPlaceholder jsonPlaceholder = retrofit.create(JSONPlaceholder.class);
@@ -86,25 +83,18 @@ public class Home extends AppCompatActivity {
         call.enqueue(new Callback<Computer>() {
             @Override
             public void onResponse(Call<Computer> call, Response<Computer> response) {
-
-                Log.e("e", "RESPONSE2  " + response);
-
                 if (!response.isSuccessful()) {
                     Toast.makeText(Home.this, response.message(), Toast.LENGTH_SHORT).show();
                     return;
                 }
                 Computer computer = response.body();
                 Log.e("e", "RESPONSE2  " + computer.getCpu());
-
                 name = computer.getName();
                 cpu.setText(computer.getCpu());
-
                 textViewName.setText(name);
                 ram.setText(String.valueOf(computer.getRam()));
                 initDisksRecyclerView(computer.getDisks());
                 initGpusRecyclerView(computer.getGpus());
-
-
             }
 
             @Override

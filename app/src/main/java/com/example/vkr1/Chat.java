@@ -18,9 +18,12 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.example.vkr1.Adapters.MessagesAdapter;
+import com.example.vkr1.Entity.Computer;
 import com.example.vkr1.Entity.Message;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.gson.JsonParser;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.net.URISyntaxException;
@@ -47,9 +50,15 @@ public class Chat extends AppCompatActivity {
 
     RecyclerView messageRecyclerView;
 
-    private String currenttime;
     private Calendar calendar;
     private SimpleDateFormat simpleDateFormat;
+    String jsonMessage = "";
+
+    String room;
+    int from;
+    String msg;
+    long timestamp;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,6 +88,7 @@ public class Chat extends AppCompatActivity {
             key = (String) savedInstanceState.getSerializable("Key");
             name = (String) savedInstanceState.getSerializable("Name");
         }
+        room = hardwareId + "_chat";
 
         //Имя компьютера сверху
         textViewName.setText(name);
@@ -163,30 +173,53 @@ public class Chat extends AppCompatActivity {
             Log.e(TAG, "NO CONNECTION WEBSOCKETS ");
         }
         mSocket.connect();
+        while(!mSocket.connected()) {
+        }
+        if (mSocket.connected()) {
+            try {
+                jsonMessage = new JSONObject()
+                        .put("room", room)
+                        .put("offset", 0)
+                        .toString();
+            } catch (Exception ex) {
+                Log.e(TAG, "NO CONNECTION WEBSOCKETS ");
+            }
 
-
+            mSocket.on("chat_join", chatJoin);
+            mSocket.emit("chat_history", jsonMessage);
+            mSocket.on("chat_history", chatHistory);
+        }
+        else {
+            Log.e("NO CONN", "no connection");
+        }
+        messagesAdapter.notifyDataSetChanged();
     }
 
     private void attemptSend() {
-
         String message = getMessage.getText().toString().trim();
         if (TextUtils.isEmpty(message)) {
             return;
         }
-        Date date = new Date();
-        currenttime = simpleDateFormat.format(calendar.getTime());
-        Message message1 = new Message(message, key, date.getTime(), currenttime, true);
+        long unixTime = System.currentTimeMillis() / 1000L;
+        //ID добавить
+        Message message1 = new Message(message, 12, unixTime, true);
         messagesArrayList.add(message1);
         messagesAdapter.notifyDataSetChanged();
 
-        mSocket.connect();
         if (mSocket.connected()) {
-
             getMessage.setText("");
-            mSocket.on("my_response", onNewMessage);
-
-            //типа тут?
-            mSocket.emit("my_broadcast_event", message);
+            try {
+                jsonMessage = new JSONObject()
+                        .put("from", message1.getSenderId())
+                        .put("room", room)
+                        .put("timestamp", message1.getTimestamp())
+                        .put("msg", message1.getMessage())
+                        .toString();
+            } catch (Exception ex) {
+                Log.e("ERROR", ex.getMessage());
+            }
+            mSocket.emit("chat_message", jsonMessage);
+            mSocket.on("chat_message", chatMessage);
         }
         else {
             Log.e(TAG, "NO CONNECTION!!!! ");
@@ -194,26 +227,92 @@ public class Chat extends AppCompatActivity {
 
     }
 
-    Emitter.Listener onNewMessage = new Emitter.Listener() {
+    Emitter.Listener chatJoin = new Emitter.Listener() {
         @Override
         public void call(final Object... args) {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    JSONObject data = (JSONObject) args[0];
-                    String text;
-                    String id;
+                    JSONObject data = new JSONObject();
                     try {
-                        text = data.getString("data");
+                        String dataString = (String) args[0];
+                        data = new JSONObject(dataString);
+                    } catch (Exception ex) {
+                        Log.e("ERROR", ex.getMessage());
+                    }
+                    try {
+                        room = data.getString("room");
 
-                        //ЗАМЕНИТЬ
-                        Date date = new Date();
-                        currenttime = simpleDateFormat.format(calendar.getTime());
-                        Message message1 = new Message(text, key, date.getTime(), currenttime, false);
-                        messagesArrayList.add(message1);
+                    } catch (Exception e) {
+                        return;
+                    }
+                }
+            });
+        }
+    };
+
+    Emitter.Listener chatMessage = new Emitter.Listener() {
+        @Override
+        public void call(final Object... args) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    JSONObject data = new JSONObject();
+                    try {
+                        String dataString = (String) args[0];
+                        data = new JSONObject(dataString);
+                    } catch (Exception ex) {
+                        Log.e("ERROR", ex.getMessage());
+                    }
+                    try {
+                        from = data.getInt("from");
+                        timestamp = data.getLong("timestamp");
+                        msg = data.getString("msg");
+                        Log.e("PRISHEL", "room: " + room);
+
+
+                        //long unixTime = System.currentTimeMillis() / 1000L;
+                        Message message = new Message(msg, from , timestamp, false);
+                        messagesArrayList.add(message);
                         messagesAdapter.notifyDataSetChanged();
 
-                        Log.e(TAG, "message: " + text);
+                        Log.e(TAG, "message: " + message);
+
+
+
+                    } catch (Exception e) {
+                        return;
+                    }
+                }
+            });
+        }
+    };
+
+    Emitter.Listener chatHistory = new Emitter.Listener() {
+        @Override
+        public void call(final Object... args) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    JSONObject data = new JSONObject();
+                    try {
+                        String dataString = (String) args[0];
+                        data = new JSONObject(dataString);
+                    } catch (Exception ex) {
+                        Log.e("ERROR", ex.getMessage());
+                    }
+                    try {
+                        JSONArray messages = data.getJSONArray("messages");
+                        for (int i = 0; i < messages.length(); i++) {
+                            JSONObject mesObj = messages.getJSONObject(i);
+                            from = mesObj.getInt("from");
+                            timestamp = mesObj.getLong("timestamp");
+                            msg = mesObj.getString("msg");
+
+                            Message message = new Message(msg, from , timestamp, false);
+                            messagesArrayList.add(message);
+                        }
+                        messagesAdapter.notifyDataSetChanged();
 
                     } catch (Exception e) {
                         return;

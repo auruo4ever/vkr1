@@ -50,13 +50,13 @@ public class MessagesAdapter extends RecyclerView.Adapter {
         {
             SenderViewHolder viewHolder = (SenderViewHolder)holder;
             viewHolder.textViewmessaage.setText(messages.getMessage());
-            viewHolder.timeofmessage.setText(messages.getCurrenttime());
+            viewHolder.timeofmessage.setText(messages.getNormalTime());
         }
         else
         {
             RecieverViewHolder viewHolder=(RecieverViewHolder)holder;
             viewHolder.textViewmessaage.setText(messages.getMessage());
-            viewHolder.timeofmessage.setText(messages.getCurrenttime());
+            viewHolder.timeofmessage.setText(messages.getNormalTime());
         }
     }
 
@@ -64,7 +64,7 @@ public class MessagesAdapter extends RecyclerView.Adapter {
     @Override
     public int getItemViewType(int position) {
         Message message = messagesArrayList.get(position);
-        if (message.isMine())
+        if (message.getSenderId() == 12)
 
         {
             return  ITEM_SEND;
@@ -85,11 +85,8 @@ public class MessagesAdapter extends RecyclerView.Adapter {
 
     class SenderViewHolder extends RecyclerView.ViewHolder
     {
-
         TextView textViewmessaage;
         TextView timeofmessage;
-
-
         public SenderViewHolder(@NonNull View itemView) {
             super(itemView);
             textViewmessaage = itemView.findViewById(R.id.sendermessage);
@@ -99,10 +96,8 @@ public class MessagesAdapter extends RecyclerView.Adapter {
 
     class RecieverViewHolder extends RecyclerView.ViewHolder
     {
-
         TextView textViewmessaage;
         TextView timeofmessage;
-
         public RecieverViewHolder(@NonNull View itemView) {
             super(itemView);
             textViewmessaage = itemView.findViewById(R.id.sendermessage);
